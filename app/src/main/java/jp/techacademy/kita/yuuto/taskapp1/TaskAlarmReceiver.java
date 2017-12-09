@@ -32,12 +32,13 @@ public class TaskAlarmReceiver extends BroadcastReceiver {
         int taskId = intent.getIntExtra(MainActivity.EXTRA_TASK, -1);
         Realm realm = Realm.getDefaultInstance();
         Task task = realm.where(Task.class).equalTo("id", taskId).findFirst();
-        realm.close();
+
 
         // タスクの情報を設定する
         builder.setTicker(task.getTitle()); // 5.0以降は表示されない
         builder.setContentTitle(task.getTitle());
         builder.setContentText(task.getContents());
+        builder.setContentText(task.getCategory());
 
         // 通知をタップしたらアプリを起動するようにする
         Intent startAppIntent = new Intent(context, MainActivity.class);
@@ -48,7 +49,8 @@ public class TaskAlarmReceiver extends BroadcastReceiver {
         // 通知を表示する
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         notificationManager.notify(task.getId(), builder.build());
+        realm.close();
 
-        Log.d("TaskApp", "onReceive");
+        //Log.d("TaskApp", "onReceive");
     }
 }
