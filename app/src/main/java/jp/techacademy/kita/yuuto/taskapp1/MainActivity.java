@@ -11,6 +11,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.ListView;
 
 import java.util.ArrayList;
@@ -36,6 +37,8 @@ public class MainActivity extends AppCompatActivity {
 
     private ListView mListView;
     private jp.techacademy.kita.yuuto.taskapp1.TaskAdapter mTaskAdapter;
+    //検索ボタン機能追加のためメンバ変数追加
+    Button mSearchButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,6 +62,7 @@ public class MainActivity extends AppCompatActivity {
         // ListViewの設定
         mTaskAdapter = new jp.techacademy.kita.yuuto.taskapp1.TaskAdapter(MainActivity.this);
         mListView = (ListView) findViewById(R.id.listView1);
+        mSearchButton = (Button) findViewById(R.id.search_button);
 
         // ListViewをタップしたときの処理
         mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -72,7 +76,7 @@ public class MainActivity extends AppCompatActivity {
 
                 startActivity(intent);
             }
-    });
+        });
 
         // ListViewを長押ししたときの処理
         mListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
@@ -119,6 +123,22 @@ public class MainActivity extends AppCompatActivity {
                 dialog.show();
 
                 return true;
+            }
+        });
+
+        //検索ボタンを押した時の処理
+        mSearchButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Realmデータベースから、「category検索をした結果」を取得。あいまい検索できない（？）
+//                RealmResults<Task> taskRealmResults = mRealm.where(Task.class).containsString("category", task.getcategory()).findAll();
+                RealmResults<Task> taskRealmResults = mRealm.where(Task.class).equalTo("category", task.getcategory()).findAll();
+                // 上記の結果を、TaskList としてセットする
+                mTaskAdapter.setTaskList(mRealm.copyFromRealm(taskRealmResults));
+                // TaskのListView用のアダプタに渡す
+                mListView.setAdapter(mTaskAdapter);
+                // 表示を更新するために、アダプターにデータが変更されたことを知らせる
+                mTaskAdapter.notifyDataSetChanged();
             }
         });
 
