@@ -32,7 +32,6 @@ public class TaskAlarmReceiver extends BroadcastReceiver {
         Realm realm = Realm.getDefaultInstance();
         Task task = realm.where(Task.class).equalTo("id", taskId).findFirst();
 
-
         // タスクの情報を設定する
         builder.setTicker(task.getTitle()); // 5.0以降は表示されない
         builder.setContentTitle(task.getTitle());

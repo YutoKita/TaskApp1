@@ -12,12 +12,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListView;
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
 import io.realm.Realm;
 import io.realm.RealmChangeListener;
 import io.realm.RealmResults;
@@ -113,7 +112,6 @@ public class MainActivity extends AppCompatActivity {
                         AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
                         alarmManager.cancel(resultPendingIntent);
 
-
                         reloadListView();
                     }
                 });
@@ -130,9 +128,11 @@ public class MainActivity extends AppCompatActivity {
         mSearchButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // Realmデータベースから、「category検索をした結果」を取得。あいまい検索できない（？）
-//                RealmResults<Task> taskRealmResults = mRealm.where(Task.class).containsString("category", task.getcategory()).findAll();
-                RealmResults<Task> taskRealmResults = mRealm.where(Task.class).equalTo("category", task.getcategory()).findAll();
+                // 検索キーワードを入力する EditTextから入力された文字を取得。完全一致検索はequalTo、部分一致検索は
+                EditText editText = (EditText)findViewById(R.id.search_edit_text);
+                String text = editText.getText().toString();
+//                RealmResults<Task> taskRealmResults = mRealm.where(Task.class).equalTo("category", text).findAll();
+                RealmResults<Task> taskRealmResults = mRealm.where(Task.class).contains("category", text).findAll();
                 // 上記の結果を、TaskList としてセットする
                 mTaskAdapter.setTaskList(mRealm.copyFromRealm(taskRealmResults));
                 // TaskのListView用のアダプタに渡す
